@@ -1,0 +1,147 @@
+{
+    "properties": {
+        "timeseries": {
+            "6152": {
+                "service": {
+                    "id": "1",
+                    "label": "IRCEL - CELINE: timeseries-api (SOS 2.0)"
+                },
+                "offering": {
+                    "id": "6152",
+                    "label": "6152 - DAILY CORRECTION TEOM - procedure"
+                },
+                "feature": {
+                    "id": "1030",
+                    "label": "40AL01 - Linkeroever"
+                },
+                "procedure": {
+                    "id": "6152",
+                    "label": "6152 - DAILY CORRECTION TEOM - procedure"
+                },
+                "phenomenon": {
+                    "id": "5",
+                    "label": "Particulate Matter < 10 \u00b5m"
+                },
+                "category": {
+                    "id": "5",
+                    "label": "Particulate Matter < 10 \u00b5m"
+                }
+            },
+            "6151": {
+                "service": {
+                    "id": "1",
+                    "label": "IRCEL - CELINE: timeseries-api (SOS 2.0)"
+                },
+                "offering": {
+                    "id": "6151",
+                    "label": "6151 - Unknown device - procedure"
+                },
+                "feature": {
+                    "id": "1030",
+                    "label": "40AL01 - Linkeroever"
+                },
+                "procedure": {
+                    "id": "6151",
+                    "label": "6151 - Unknown device - procedure"
+                },
+                "phenomenon": {
+                    "id": "391",
+                    "label": "Black Carbon"
+                },
+                "category": {
+                    "id": "391",
+                    "label": "Black Carbon"
+                }
+            },
+            "10897": {
+                "service": {
+                    "id": "1",
+                    "label": "IRCEL - CELINE: timeseries-api (SOS 2.0)"
+                },
+                "offering": {
+                    "id": "10897",
+                    "label": "10897 - Airmotec 1000 - procedure"
+                },
+                "feature": {
+                    "id": "1030",
+                    "label": "40AL01 - Linkeroever"
+                },
+                "procedure": {
+                    "id": "10897",
+                    "label": "10897 - Airmotec 1000 - procedure"
+                },
+                "phenomenon": {
+                    "id": "20",
+                    "label": "Benzene"
+                },
+                "category": {
+                    "id": "20",
+                    "label": "Benzene"
+                }
+            },
+            "10841": {
+                "service": {
+                    "id": "1",
+                    "label": "IRCEL - CELINE: timeseries-api (SOS 2.0)"
+                },
+                "offering": {
+                    "id": "10841",
+                    "label": "10841 - FIDAS 200 - procedure"
+                },
+                "feature": {
+                    "id": "1030",
+                    "label": "40AL01 - Linkeroever"
+                },
+                "procedure": {
+                    "id": "10841",
+                    "label": "10841 - FIDAS 200 - procedure"
+                },
+                "phenomenon": {
+                    "id": "6002",
+                    "label": "Particulate Matter < 1 \u00b5m"
+                },
+                "category": {
+                    "id": "6002",
+                    "label": "Particulate Matter < 1 \u00b5m"
+                }
+            },
+            "100008": {
+                "service": {
+                    "id": "1",
+                    "label": "IRCEL - CELINE: timeseries-api (SOS 2.0)"
+                },
+                "offering": {
+                    "id": "100008",
+                    "label": "100008 - Unknown device - procedure"
+                },
+                "feature": {
+                    "id": "1030",
+                    "label": "40AL01 - Linkeroever"
+                },
+                "procedure": {
+                    "id": "100008",
+                    "label": "100008 - Unknown device - procedure"
+                },
+                "phenomenon": {
+                    "id": "6001",
+                    "label": "Particulate Matter < 2.5 \u00b5m"
+                },
+                "category": {
+                    "id": "6001",
+                    "label": "Particulate Matter < 2.5 \u00b5m"
+                }
+            }
+        },
+        "id": 1030,
+        "label": "40AL01 - Linkeroever"
+    },
+    "geometry": {
+        "coordinates": [
+            4.385223684454717,
+            51.23619419990248,
+            "NaN"
+        ],
+        "type": "Point"
+    },
+    "type": "Feature"
+}
