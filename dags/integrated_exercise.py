@@ -22,7 +22,7 @@ with ingesting_dag:
         "python",
         "./ingest.py",
         "-d",
-        "2023-11-23",
+        "{{ ds }}",
         "-e",
         "dev"
         ]},
