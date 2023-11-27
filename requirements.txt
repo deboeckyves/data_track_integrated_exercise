@@ -10,7 +10,12 @@ charset-normalizer==3.3.2
     # via requests
 idna==3.4
     # via requests
+py4j==0.10.9.7
+    # via pyspark
+pyspark==3.5.0
+    # via -r requirements.in
 requests==2.31.0
     # via -r requirements.in
 urllib3==2.1.0
     # via requests
+boto3==1.29.7
