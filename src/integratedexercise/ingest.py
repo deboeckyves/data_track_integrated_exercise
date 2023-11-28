@@ -23,6 +23,26 @@ def process_raw_data_for_station(station: dict, date: str):
     station['timeseries'] = station_response['properties']['timeseries']
     return station
 
+def process_raw_data_for_station_v2(station: dict, date: str):
+    station_id = station['properties']['id']
+    station_response = requests.get(f'https://geo.irceline.be/sos/api/v1/stations/{station_id}').json()
+    timeseries_keys = station_response.get('properties').get('timeseries').keys()
+    headers = {'Content-Type': 'application/json'}
+    body = {"timespan": f"PT24h/{date}TZ", "timeseries": list(timeseries_keys)}
+    timeseries = requests.post(f'https://geo.irceline.be/sos/api/v1/timeseries/getData', data=json.dumps(body), headers=headers )
+
+
+    for timeserie_key in timeseries_keys:
+        station_response['properties']['timeseries'][timeserie_key]['values'] = timeseries.json()[timeserie_key]['values']
+        for value in timeseries.json()[timeserie_key]['values']:
+            value['station_id'] = station_id
+            value['station_label'] = station_id = station['properties']['label']
+            value['timeseries_id'] = timeserie_key
+            value['timeseries_id'] = timeserie_key 
+
+    station['timeseries'] = station_response['properties']['timeseries']
+    return station
+
 def write_json_to_s3(s3_bucket: str, key: str, target_json: dict):
     object = s3.Object(s3_bucket, key)
     object.put(Body=(bytes(json.dumps(target_json).encode('UTF-8'))))

@@ -3,3 +3,6 @@ pytest
 pytest-cov
 black
 flake8
+pyspark
+requests
+boto3

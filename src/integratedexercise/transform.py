@@ -2,10 +2,12 @@ import argparse
 import logging
 import sys
 import boto3
+import pyspark.sql.functions as F
 
 from pyspark.sql import SparkSession
 
 s3 = boto3.resource('s3')
+
 
 spark = SparkSession.builder.config(
     "spark.jars.packages",
@@ -40,10 +42,13 @@ def main():
 
     df = spark.read.option("multiline", "true").json("s3a://data-track-integrated-exercise/yves-data/2023-11-23/1030.json")
     df.show()
+    df.printSchema()
 
+    df.select("geometry", "properties", F.explode_outer("timeseries")).show()
 
+    df.show()
 
-    df.write.parquet("s3a://data-track-integrated-exercise/yves-data/clean/aggregate_station_by_day/2023-11-23/1030.json")
+    #df.write.parquet("s3a://data-track-integrated-exercise/yves-data/clean/aggregate_station_by_day/2023-11-23/1030.json")
 
 
 
