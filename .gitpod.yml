@@ -20,7 +20,7 @@ tasks:
       sudo update-alternatives --install /usr/bin/www-browser www-browser /workspace/bin/open.sh 100
       exit
 image:
-  file: .gitpod.Dockerfile
+  file: .gitpod.comment_Dockerfile
 github:
   prebuilds:
     master: true

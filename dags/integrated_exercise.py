@@ -35,7 +35,7 @@ with dag:
         job_queue="integrated-exercise-job-queue",
         region_name="eu-west-1",
         overrides={"command": [
-        "python",
+        "python3",
         "./transform.py",
         "-d",
         "{{ ds }}",
