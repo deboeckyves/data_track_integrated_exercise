@@ -44,4 +44,20 @@ with dag:
         ]},
     )
 
-ingest >> transform
+    load = BatchOperator(
+        task_id="yves-load",
+        job_name="yves-load",
+        job_definition="yves-integrated-exercise-load",
+        job_queue="integrated-exercise-job-queue",
+        region_name="eu-west-1",
+        overrides={"command": [
+            "python3",
+            "./load.py",
+            "-d",
+            "{{ ds }}",
+            "-e",
+            "dev"
+        ]},
+    )
+
+ingest >> transform >> load
