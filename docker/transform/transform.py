@@ -47,6 +47,7 @@ def main():
     s3 = boto3.resource("s3")
     s3_bucket = s3.Bucket(bucket)
     files_in_s3 = [f.key.split(folder + "/")[1] for f in s3_bucket.objects.filter(Prefix=folder).all()]
+    print(files_in_s3)
     counter = 0
 
     for file in files_in_s3:
@@ -66,7 +67,7 @@ def main():
             df2 = df_average.alias('df2')
 
             df = df1.join(df2, df1.phenomenon_id == df2.phenomenon_id, "left").select('df1.*', 'df2.avg_day')
-            df.write.mode("overwrite").partitionBy("phenomenon_id").parquet(f"s3a://data-track-integrated-exercise/yves-data-v2/clean/aggregate_station_by_day/{args.date}/{file}")
+            df.write.mode("overwrite").partitionBy("phenomenon_id").parquet(f"s3a://data-track-integrated-exercise/yves-data-v2/clean/aggregate_station_by_day/{args.date}/{file.split('.')[0]}")
         except Exception as err:
             print(f"Exception for file {file}: {err}")
             counter += 1

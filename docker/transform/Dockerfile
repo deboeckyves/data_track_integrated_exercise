@@ -1,7 +1,12 @@
-FROM python:3.12.0
+FROM public.ecr.aws/dataminded/spark-k8s-glue:v3.2.1-hadoop-3.3.1
 
-ADD transform.py .
+ENV PYSPARK_PYTHON python3
+WORKDIR /opt/spark/work-dir
 
-RUN pip install boto3 requests pyspark
+USER 0
 
-CMD ["python","./transform.py","-d","2023-11-23","-e","dev"]
+COPY requirements.txt requirements.txt
+RUN pip install -r requirements.txt --no-cache-dir
+COPY . .
+
+RUN pip install --no-cache-dir -e .
