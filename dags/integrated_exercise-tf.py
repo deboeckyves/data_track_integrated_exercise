@@ -3,7 +3,7 @@ from airflow.providers.amazon.aws.operators.batch import BatchOperator
 import datetime as dt
 
 dag = DAG(
-    dag_id="yves-integrated-exercise-pipeline",
+    dag_id="yves-integrated-exercise-pipeline-tf",
     description="Extract data from the geo.irceline.be api and loads into s3",
     default_args={"owner": "Yves De Boeck"},
     schedule_interval="@daily",
@@ -15,16 +15,16 @@ with dag:
     ingest = BatchOperator(
         task_id="yves-ingest",
         job_name="yves-ingest",
-        job_definition="yves-integrated-excercise-ingest",
+        job_definition="yves-integrated-exercise-ingest-tf",
         job_queue="integrated-exercise-job-queue",
         region_name="eu-west-1",
         overrides={"command": [
-        "python",
-        "./ingest.py",
-        "-d",
-        "{{ ds }}",
-        "-e",
-        "dev"
+            "python",
+            "./ingest.py",
+            "-d",
+            "{{ ds }}",
+            "-e",
+            "dev"
         ]},
     )
 
@@ -35,12 +35,12 @@ with dag:
         job_queue="integrated-exercise-job-queue",
         region_name="eu-west-1",
         overrides={"command": [
-        "python3",
-        "./transform.py",
-        "-d",
-        "{{ ds }}",
-        "-e",
-        "dev"
+            "python3",
+            "./transform.py",
+            "-d",
+            "{{ ds }}",
+            "-e",
+            "dev"
         ]},
     )
 
