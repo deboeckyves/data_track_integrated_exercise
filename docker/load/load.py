@@ -95,7 +95,7 @@ def main():
     files.update(files_in_s3)
 
     df_ppm_all_stations = spark.read.parquet(
-        f"s3a://data-track-integrated-exercise/yves-data-v2/clean/aggregate_station_by_day/{args.date}/1030.json/phenomenon_id=5")
+        f"s3a://data-track-integrated-exercise/yves-data-v2/clean/aggregate_station_by_day/{args.date}/1030/phenomenon_id=5")
 
     for file in files:
         try:
