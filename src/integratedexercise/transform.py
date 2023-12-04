@@ -3,8 +3,10 @@ import logging
 import sys
 import boto3
 import pyspark.sql.functions as F
+from geopy.geocoders import Nominatim
 
 from pyspark.sql import SparkSession
+from pyspark.sql.types import StringType
 
 s3 = boto3.resource('s3')
 
@@ -50,28 +52,56 @@ def main():
     counter = 0
 
     for file in files_in_s3:
-        data_station = spark.read.option("multiline", "true").json(
+        data_station_df = spark.read.option("multiline", "true").json(
             f"s3a://data-track-integrated-exercise/yves-data-v2/{args.date}/{file}")
 
-        if not data_station:
+        data_station_df.printSchema()
+        if not data_station_df:
             continue
 
         try:
-            df = data_station.withColumn("datetime",
-                               F.to_utc_timestamp(F.from_unixtime(F.col("timestamp") / 1000, 'yyyy-MM-dd HH:mm:ss'),
-                                                  'CET'))
-            df_average = df.groupBy("phenomenon_id").agg(F.avg("value").alias("avg_day"))
-
-            df1 = df.alias('df1')
-            df2 = df_average.alias('df2')
-
-            df = df1.join(df2, df1.phenomenon_id == df2.phenomenon_id, "left").select('df1.*', 'df2.avg_day')
-            df.write.mode("overwrite").partitionBy("phenomenon_id").parquet(f"s3a://data-track-integrated-exercise/yves-data-v2/clean/aggregate_station_by_day/{args.date}/{file}")
+            df = transform(data_station_df)
+            df.printSchema()
+            break
+            df.write.mode("overwrite").partitionBy("phenomenon_id").parquet(
+                f"s3a://data-track-integrated-exercise/yves-data-v2/clean/aggregate_station_by_day/{args.date}/{file}")
         except Exception as err:
             print(f"Exception for file {file}: {err}")
             counter += 1
 
     print(f"data transformed for date {args.date}, encountered {counter} errors")
+
+
+def transform(df):
+    # timezone: we assume it's CET for now since our only producer is located in belgium. If we were to expand to stations in other timezones
+    # we would the timezone information as a parameter. One solution would be to enforce a "timezone" column in the schema saved to s3.
+    df = df.withColumn("datetime",
+                       F.to_utc_timestamp(F.from_unixtime(F.col("timestamp") / 1000, 'yyyy-MM-dd HH:mm:ss'),
+                                          'CET'))
+    df_average = df.groupBy("phenomenon_id").agg(F.avg("value").alias("avg_day"))
+    df1 = df.alias('df1')
+    df2 = df_average.alias('df2')
+    df = df1.join(df2, df1.phenomenon_id == df2.phenomenon_id, "left").select('df1.*', 'df2.avg_day')
+
+    df = df.withColumn("station_city", get_city(df["station_geometry_coordinates_y"], df["station_geometry_coordinates_x"]))
+    df.show()
+    return df
+
+
+@F.udf(StringType())
+def get_city(x, y):
+    geolocator = Nominatim(user_agent="my_app")
+    location = geolocator.reverse(f"{x}, {y}", exactly_one=True)
+    address = location.raw['address']
+    if 'city' in address:
+        city = address['city']
+    elif 'city_district' in address:
+        city = address['city_district']
+    elif 'town' in address:
+        city = address['town']
+    else:
+        city = 'unknown'
+    return city
 
 
 if __name__ == "__main__":
