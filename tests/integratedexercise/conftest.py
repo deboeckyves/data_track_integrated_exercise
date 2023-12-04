@@ -11,3 +11,4 @@ def spark(request):
     request.addfinalizer(session.stop)
 
     return session
+
