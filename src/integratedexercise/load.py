@@ -81,10 +81,6 @@ def main():
     args = parser.parse_args()
     logging.info(f"Using args: {args}")
 
-    # sfOptions = {'sfURL': 'yw41113.eu-west-1.snowflakecomputing.com', 'sfPassword': 'ilovedbt', 'sfUser': 'axxes_yves',
-    #              'sfDatabase': 'ACADEMY_DBT', 'sfWarehouse': 'COMPUTE_WH', 'sfSchema': 'AXXES_YVES',
-    #              'sfRole': 'STUDENT'}
-
     bucket = "data-track-integrated-exercise"
     folder = f"yves-data-v2/clean/aggregate_station_by_day/{args.date}"
 
@@ -105,8 +101,8 @@ def main():
         except Exception as err:
             print(f"Exception fetching ppm data for date {args.date} and file {file}, possibly because this station does not have ppm data: {err}")
 
-    df_ppm_all_stations.show()
-    df_ppm_all_stations.show(n=5, truncate=False, vertical=True)
+    # df_ppm_all_stations.show()
+    # df_ppm_all_stations.show(n=5, truncate=False, vertical=True)
 
     sfOptions = get_snowflake_creds_from_sm("snowflake/integrated-exercise/yves-login")
     table_name = f"PPM_ALL_STATIONS_{args.date.replace('-', '_')}"
@@ -133,7 +129,8 @@ def main():
         timestamp INTEGER,
         value DOUBLE,
         datetime TIMESTAMP,
-        avg_day DOUBLE)""")
+        avg_day DOUBLE,
+        city VARCHAR)""")
 
     df_ppm_all_stations.write.format("snowflake").options(**sfOptions).option("dbtable", f"{table_name}").mode("overwrite").save()
 

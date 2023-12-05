@@ -4,13 +4,16 @@ import sys
 import boto3
 import pyspark.sql.functions as F
 import requests
-# from geopy.geocoders import Nominatim
 
 from pyspark.sql import SparkSession
 from pyspark.sql.types import StringType
 
-s3 = boto3.resource('s3')
+S3_PATH_PREFIX = 's3a'
 
+S3_SOURCE_FOLDER_NAME = 'yves-data-v2'
+S3_TARGET_FOLDER_NAME = f'{S3_SOURCE_FOLDER_NAME}/clean/aggregate_station_by_day'
+S3_BUCKET_NAME = "data-track-integrated-exercise"
+s3 = boto3.resource('s3')
 spark = SparkSession.builder.config(
     "spark.jars.packages",
     ",".join(
@@ -37,25 +40,21 @@ def main():
     args = parser.parse_args()
     logging.info(f"Using args: {args}")
 
-    bucket = "data-track-integrated-exercise"
-    folder = f"yves-data-v2/{args.date}"
+    folder = f"{S3_SOURCE_FOLDER_NAME}/{args.date}"
     s3 = boto3.resource("s3")
-    s3_bucket = s3.Bucket(bucket)
+    s3_bucket = s3.Bucket(S3_BUCKET_NAME)
     files_in_s3 = [f.key.split(folder + "/")[1] for f in s3_bucket.objects.filter(Prefix=folder).all()]
     counter = 0
 
     for file in files_in_s3:
         data_station_df = spark.read.option("multiline", "true").json(
-            f"s3a://data-track-integrated-exercise/yves-data-v2/{args.date}/{file}")
+            f"{S3_PATH_PREFIX}://{S3_BUCKET_NAME}/{S3_SOURCE_FOLDER_NAME}/{args.date}/{file}")
 
-        data_station_df.printSchema()
         if not data_station_df:
             continue
 
         try:
             df = transform(data_station_df)
-            df.printSchema()
-            break
             write_parquet_to_s3(df, args.date, file)
         except Exception as err:
             print(f"Exception for file {file}: {err}")
@@ -66,7 +65,7 @@ def main():
 
 def write_parquet_to_s3(df, date, file):
     df.write.mode("overwrite").partitionBy("phenomenon_id").parquet(
-        f"s3a://data-track-integrated-exercise/yves-data-v2/clean/aggregate_station_by_day/{date}/{file}")
+        f"{S3_PATH_PREFIX}://{S3_BUCKET_NAME}/{S3_TARGET_FOLDER_NAME}/{date}/{file}")
 
 
 def transform(df):
@@ -100,9 +99,6 @@ def add_datetime_column(df):
 
 @F.udf(StringType())
 def get_city(x, y):
-    # geolocator = Nominatim(user_agent="my_app")
-    # location = geolocator.reverse(f"{x}, {y}", exactly_one=True)
-    # address = location.raw['address']
     url = f'https://nominatim.openstreetmap.org/reverse?lat={y}&lon={x}&format=json&accept-language=en'
     try:
         result = requests.get(url=url)
