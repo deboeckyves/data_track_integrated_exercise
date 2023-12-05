@@ -1,0 +1,18 @@
+version: 0.1
+
+phases:
+  install:
+    runtime-versions:
+      python: 3.10
+    commands:
+      - pip3 install pytest
+  build:
+    commands:
+      - python -m pytest --junitxml=test_reports/test_report
+
+reports:
+  pytest_reports:
+    files:
+      - test_report
+    base-directory: test_reports
+    file-format: JUNITXML
