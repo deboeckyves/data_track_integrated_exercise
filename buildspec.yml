@@ -5,7 +5,7 @@ phases:
     runtime-versions:
       python: 3.10
     commands:
-      - pip3 install pytest
+      - pip3 install pytest requests==2.31.0  pyspark==3.2.1
   build:
     commands:
       - python -m pytest --junitxml=test_reports/test_report
