@@ -4,9 +4,9 @@ import sys
 import boto3
 import pyspark.sql.functions as F
 import requests
-
+import time
 from pyspark.sql import SparkSession
-from pyspark.sql.types import StringType
+
 
 S3_PATH_PREFIX = 's3a'
 
@@ -26,6 +26,19 @@ spark = SparkSession.builder.config(
     "com.amazonaws.auth.DefaultAWSCredentialsProviderChain",
 ).getOrCreate()
 
+
+def time_usage_factory(func_name):
+    def time_usage(func):
+        def wrapper(*args, **kwargs):
+            beg_ts = time.time()
+            retval = func(*args, **kwargs)
+            end_ts = time.time()
+            logging.info(f"{func_name} elapsed time: {end_ts - beg_ts}")
+            return retval
+
+        return wrapper
+
+    return time_usage
 
 
 def main():
@@ -47,8 +60,7 @@ def main():
     counter = 0
 
     for file in files_in_s3:
-        data_station_df = spark.read.option("multiline", "true").json(
-            f"{S3_PATH_PREFIX}://{S3_BUCKET_NAME}/{S3_SOURCE_FOLDER_NAME}/{args.date}/{file}")
+        data_station_df = read_json_from_s3(args, file)
 
         if not data_station_df:
             continue
@@ -57,28 +69,39 @@ def main():
             df = transform(data_station_df)
             write_parquet_to_s3(df, args.date, file)
         except Exception as err:
-            print(f"Exception for file {file}: {err}")
+            logging.error(f"Exception for file {file}: {err}")
             counter += 1
 
-    print(f"data transformed for date {args.date}, encountered {counter} errors")
+    logging.info(f"data transformed for date {args.date}, encountered {counter} errors")
 
 
+@time_usage_factory("read_json_from_s3")
+def read_json_from_s3(args, file):
+    return spark.read.option("multiline", "true").json(
+        f"{S3_PATH_PREFIX}://{S3_BUCKET_NAME}/{S3_SOURCE_FOLDER_NAME}/{args.date}/{file}")
+
+
+@time_usage_factory("write_parquet_to_s3")
 def write_parquet_to_s3(df, date, file):
     df.write.mode("overwrite").partitionBy("phenomenon_id").parquet(
         f"{S3_PATH_PREFIX}://{S3_BUCKET_NAME}/{S3_TARGET_FOLDER_NAME}/{date}/{file}")
 
 
+@time_usage_factory("transform")
 def transform(df):
     # timezone: we assume it's CET for now since our only producer is located in belgium. If we were to expand to stations in other timezones
     # we would the timezone information as a parameter. One solution would be to enforce a "timezone" column in the schema saved to s3.
-    df = add_datetime_column(df)
+    df = add_datetime_column(df).cache()
     df = add_avg_column(df)
     df = add_city_column(df)
     return df
 
 
 def add_city_column(df):
-    df = df.withColumn("station_city", get_city(df["station_geometry_coordinates_x"], df["station_geometry_coordinates_y"]))
+    x = df.first().station_geometry_coordinates_x
+    y = df.first().station_geometry_coordinates_y
+    city = get_city(x, y)
+    df = df.withColumn("station_city", F.lit(city))
     return df
 
 
@@ -97,7 +120,10 @@ def add_datetime_column(df):
     return df
 
 
-@F.udf(StringType())
+# @F.udf(StringType())
+# it is possible to implement this as an udf but this will have a very big impact on performance if not properly cached
+# since the value is the same for each record of the same station, we can just call this function once and add a constant column
+# because there is no built-in pyspark udf caching functionality, i decided to go for the latter
 def get_city(x, y):
     url = f'https://nominatim.openstreetmap.org/reverse?lat={y}&lon={x}&format=json&accept-language=en'
     try:
