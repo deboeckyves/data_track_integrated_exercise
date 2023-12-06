@@ -5,7 +5,7 @@ phases:
     runtime-versions:
       python: 3.10
     commands:
-      - pip3 install pytest requests==2.31.0  pyspark==3.2.1
+      - pip3 install pytest requests==2.31.0  pyspark==3.2.1 boto3==1.29.7  botocore==1.32.7
   build:
     commands:
       - echo $JAVA_HOME
