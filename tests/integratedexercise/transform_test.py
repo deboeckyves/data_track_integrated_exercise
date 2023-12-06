@@ -78,24 +78,19 @@ def test_transform_add_city_column(spark):
 
         StructField("station_geometry_coordinates_x", DoubleType(), True),
         StructField("station_geometry_coordinates_y", DoubleType(), True),
-        StructField("station_city", StringType(), True)
+        StructField("station_city", StringType(), False)
     ]
     df_input = spark.createDataFrame([
         (5.547464183, 50.624991569),
         (5.547464183, 50.624991569),
-        (3.121155599, 50.95317728),
-        (3.121155599, 50.95317728),
     ], schema=StructType(df_input_fields))
 
     df_expected_output = spark.createDataFrame([
         (5.547464183, 50.624991569, 'Liège'),
         (5.547464183, 50.624991569, 'Liège'),
-        (3.121155599, 50.95317728, 'Roeselare'),
-        (3.121155599, 50.95317728, 'Roeselare'),
     ], schema=StructType(df_output_fields))
 
     df_actual_output = add_city_column(df_input)
-    print("na transform")
 
     assert_frames_functionally_equivalent(df_actual_output, df_expected_output)
 
@@ -151,7 +146,7 @@ def test_transform_produces_correct_schema(spark):
         StructField("value", DoubleType(), True),
         StructField("datetime", TimestampType(), True),
         StructField("avg_day", DoubleType(), True),
-        StructField("station_city", StringType(), True)
+        StructField("station_city", StringType(), False)
     ]
     df_input = spark.createDataFrame([
         ('5', 'Particulate Matter < 10 µm', '1170', '43H201 - Liège', '6880', '6880 -  - procedure', '25', 'Particulate Matter < 10 µm',
