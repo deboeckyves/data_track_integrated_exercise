@@ -8,6 +8,8 @@ phases:
       - pip3 install pytest requests==2.31.0  pyspark==3.2.1
   build:
     commands:
+      - echo $JAVA_HOME
+      - echo $(dirname $(dirname $(readlink -f $(which javac))))
       - python -m pytest --junitxml=test_reports/test_report
 
 reports:
