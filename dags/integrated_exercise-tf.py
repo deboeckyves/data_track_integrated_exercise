@@ -31,7 +31,7 @@ with dag:
     transform = BatchOperator(
         task_id="yves-transform",
         job_name="yves-transform",
-        job_definition="yves-integrated-exercise-transform",
+        job_definition="yves-integrated-exercise-transform-tf",
         job_queue="integrated-exercise-job-queue",
         region_name="eu-west-1",
         overrides={"command": [
@@ -47,7 +47,7 @@ with dag:
     load = BatchOperator(
         task_id="yves-load",
         job_name="yves-load",
-        job_definition="yves-integrated-exercise-load",
+        job_definition="yves-integrated-exercise-load-tf",
         job_queue="integrated-exercise-job-queue",
         region_name="eu-west-1",
         overrides={"command": [
