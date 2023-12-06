@@ -9,7 +9,6 @@ phases:
   build:
     commands:
       - echo $JAVA_HOME
-      - echo $(dirname $(dirname $(readlink -f $(which javac))))
       - python -m pytest --junitxml=test_reports/test_report
 
 reports:
