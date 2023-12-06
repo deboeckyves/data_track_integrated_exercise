@@ -10,7 +10,7 @@ phases:
     commands:
       - echo $JAVA_HOME
       - ls
-      - python -m pytest tests/integratedexercise/transform_test.py
+      - python3 -m pytest tests/integratedexercise/transform_test.py
 #      - python -m pytest --junitxml=test_reports/test_report
 
 reports:
