@@ -134,7 +134,63 @@ def main():
 
     df_ppm_all_stations.write.format("snowflake").options(**sfOptions).option("dbtable", f"{table_name}").mode("overwrite").save()
 
+    static_table_name = "PPM_LAST_DAY"
+    spark.sparkContext._jvm.net.snowflake.spark.snowflake.Utils.runQuery(sfOptions, f"""CREATE TABLE IF NOT EXISTS {static_table_name} (
+        category_id VARCHAR,
+        category_label VARCHAR,
+        feature_id VARCHAR,
+        feature_label VARCHAR,
+        offering_id VARCHAR,
+        offering_label VARCHAR,
+        phenomenon_label VARCHAR,
+        procedure_id VARCHAR,
+        procedure_label VARCHAR,
+        service_id VARCHAR,
+        service_label VARCHAR,
+        station_geometry_coordinates_x DOUBLE,
+        station_geometry_coordinates_y DOUBLE,
+        station_geometry_coordinates_z VARCHAR,
+        station_geometry_type VARCHAR,
+        station_id INTEGER,
+        station_label VARCHAR,
+        station_type VARCHAR,
+        timeseries_id VARCHAR,
+        timestamp INTEGER,
+        value DOUBLE,
+        datetime TIMESTAMP,
+        avg_day DOUBLE,
+        city VARCHAR)""")
 
+    df_ppm_all_stations.write.format("snowflake").options(**sfOptions).option("dbtable", f"{static_table_name}").mode("overwrite").save()
+
+    static_table_name = "PPM_ALL"
+    spark.sparkContext._jvm.net.snowflake.spark.snowflake.Utils.runQuery(sfOptions, f"""CREATE TABLE IF NOT EXISTS {static_table_name} (
+        category_id VARCHAR,
+        category_label VARCHAR,
+        feature_id VARCHAR,
+        feature_label VARCHAR,
+        offering_id VARCHAR,
+        offering_label VARCHAR,
+        phenomenon_label VARCHAR,
+        procedure_id VARCHAR,
+        procedure_label VARCHAR,
+        service_id VARCHAR,
+        service_label VARCHAR,
+        station_geometry_coordinates_x DOUBLE,
+        station_geometry_coordinates_y DOUBLE,
+        station_geometry_coordinates_z VARCHAR,
+        station_geometry_type VARCHAR,
+        station_id INTEGER,
+        station_label VARCHAR,
+        station_type VARCHAR,
+        timeseries_id VARCHAR,
+        timestamp INTEGER,
+        value DOUBLE,
+        datetime TIMESTAMP,
+        avg_day DOUBLE,
+        city VARCHAR)""")
+
+    df_ppm_all_stations.write.format("snowflake").options(**sfOptions).option("dbtable", f"{static_table_name}").mode("append").save()
 
 if __name__ == "__main__":
     main()
