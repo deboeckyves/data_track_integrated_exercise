@@ -2,11 +2,15 @@ import datetime
 import pytest
 import logging
 from pytz import timezone
+import time
+import os
 
 from src.integratedexercise.transform import add_city_column, add_datetime_column, add_avg_column, transform
 from pyspark.sql import DataFrame
 from pyspark.sql.types import StructField, StringType, IntegerType, StructType, LongType, DoubleType, TimestampType
 
+os.environ['TZ'] = 'Europe/Brussels'
+time.tzset()
 
 def test_transform_add_avg_column(spark):
     df_input_fields = [
