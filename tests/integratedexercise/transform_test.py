@@ -72,25 +72,26 @@ def test_transform_add_datetime_columnn(spark):
 
 def test_transform_add_city_column(spark):
     df_input_fields = [
+        StructField("station_label", StringType(), True),
         StructField("station_geometry_coordinates_x", DoubleType(), True),
         StructField("station_geometry_coordinates_y", DoubleType(), True),
 
     ]
 
     df_output_fields = [
-
+        StructField("station_label", StringType(), True),
         StructField("station_geometry_coordinates_x", DoubleType(), True),
         StructField("station_geometry_coordinates_y", DoubleType(), True),
         StructField("station_city", StringType(), False)
     ]
     df_input = spark.createDataFrame([
-        (5.547464183, 50.624991569),
-        (5.547464183, 50.624991569),
+        ("43H201 - Liège", 5.547464183, 50.624991569),
+        ("43H201 - Liège", 5.547464183, 50.624991569),
     ], schema=StructType(df_input_fields))
 
     df_expected_output = spark.createDataFrame([
-        (5.547464183, 50.624991569, 'Liège'),
-        (5.547464183, 50.624991569, 'Liège'),
+        ("43H201 - Liège", 5.547464183, 50.624991569, 'Liège'),
+        ("43H201 - Liège", 5.547464183, 50.624991569, 'Liège'),
     ], schema=StructType(df_output_fields))
 
     df_actual_output = add_city_column(df_input)
