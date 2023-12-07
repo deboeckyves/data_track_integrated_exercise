@@ -84,7 +84,7 @@ def read_json_from_s3(args, file):
 @time_usage_factory("write_parquet_to_s3")
 def write_parquet_to_s3(df, date, file):
     df.write.mode("overwrite").partitionBy("phenomenon_id").parquet(
-        f"{S3_PATH_PREFIX}://{S3_BUCKET_NAME}/{S3_TARGET_FOLDER_NAME}/{date}/{file}")
+        f"{S3_PATH_PREFIX}://{S3_BUCKET_NAME}/{S3_TARGET_FOLDER_NAME}/{date}/{file.split('.')[0]}")
 
 
 @time_usage_factory("transform")
