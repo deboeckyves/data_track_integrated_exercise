@@ -11,16 +11,12 @@ phases:
       - docker tag yves-integrated-exercise-ingest-tf:latest 167698347898.dkr.ecr.eu-west-1.amazonaws.com/yves-integrated-exercise-ingest-tf:latest
       - docker push 167698347898.dkr.ecr.eu-west-1.amazonaws.com/yves-integrated-exercise-ingest-tf:latest
 
-      - cd ..
-
-      - cd docker/transform
+      - cd ../transform
       - docker build -t yves-integrated-exercise-transform-tf .
       - docker tag yves-integrated-exercise-transform-tf:latest 167698347898.dkr.ecr.eu-west-1.amazonaws.com/yves-integrated-exercise-transform-tf:latest
       - docker push 167698347898.dkr.ecr.eu-west-1.amazonaws.com/yves-integrated-exercise-transform-tf:latest
 
-      - cd ..
-
-      - cd docker/load
+      - cd ../load
       - docker build -t yves-integrated-exercise-load-tf .
       - docker tag yves-integrated-exercise-load-tf:latest 167698347898.dkr.ecr.eu-west-1.amazonaws.com/yves-integrated-exercise-load-tf:latest
       - docker push 167698347898.dkr.ecr.eu-west-1.amazonaws.com/yves-integrated-exercise-load-tf:latest
