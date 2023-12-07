@@ -1,6 +1,7 @@
 import datetime
 import pytest
 import logging
+from pytz import timezone
 
 from src.integratedexercise.transform import add_city_column, add_datetime_column, add_avg_column, transform
 from pyspark.sql import DataFrame
@@ -48,23 +49,21 @@ def test_transform_add_datetime_columnn(spark):
         StructField("datetime", TimestampType(), True),
 
     ]
+
     df_input = spark.createDataFrame([
-        (1, 1700611200000),
-        (2, 1700614800000),
-        (3, 1700618400000),
-        (4, 1700622000000),
+        (1, create_cet_timestamp("2023-11-22 00:00:00")),
     ], schema=StructType(df_input_fields))
 
     df_output = spark.createDataFrame([
-        (1, 1700611200000, datetime.datetime.strptime("2023-11-22 00:00:00", '%Y-%m-%d %H:%M:%S')),
-        (2, 1700614800000, datetime.datetime.strptime("2023-11-22 01:00:00", '%Y-%m-%d %H:%M:%S')),
-        (3, 1700618400000, datetime.datetime.strptime("2023-11-22 02:00:00", '%Y-%m-%d %H:%M:%S')),
-        (4, 1700622000000, datetime.datetime.strptime("2023-11-22 03:00:00", '%Y-%m-%d %H:%M:%S')),
+        (1, create_cet_timestamp("2023-11-22 00:00:00"), create_utc_datetime("2023-11-22 00:00:00")),
     ], schema=StructType(df_output_fields))
 
     df_expected = add_datetime_column(df_input)
 
     assert_frames_functionally_equivalent(df_expected, df_output)
+
+
+
 
 
 def test_transform_add_city_column(spark):
@@ -151,34 +150,34 @@ def test_transform_produces_correct_schema(spark):
     df_input = spark.createDataFrame([
         ('5', 'Particulate Matter < 10 µm', '1170', '43H201 - Liège', '6880', '6880 -  - procedure', '25', 'Particulate Matter < 10 µm',
          '6880', '6880 -  - procedure', '1', 'IRCEL - CELINE: timeseries-api (SOS 2.0)', 5.547464183, 50.624991569, 50.5, "Point", 1170,
-         "43H201 - Liège", "Feature", "6880", 1700611200000, 15.0),
+         "43H201 - Liège", "Feature", "6880", create_cet_timestamp("2023-11-22 00:00:00"), 15.0),
         ('5', 'Particulate Matter < 10 µm', '1170', '43H201 - Liège', '6880', '6880 -  - procedure', '25', 'Particulate Matter < 10 µm',
          '6880', '6880 -  - procedure', '1', 'IRCEL - CELINE: timeseries-api (SOS 2.0)', 5.547464183, 50.624991569, 50.5, "Point", 1170,
-         "43H201 - Liège", "Feature", "6880", 1700611200000, 15.0),
+         "43H201 - Liège", "Feature", "6880", create_cet_timestamp("2023-11-22 00:00:00"), 15.0),
         ('5', 'Particulate Matter < 10 µm', '1170', '43H201 - Liège', '6880', '6880 -  - procedure', '25', 'Particulate Matter < 10 µm',
          '6880', '6880 -  - procedure', '1', 'IRCEL - CELINE: timeseries-api (SOS 2.0)', 5.547464183, 50.624991569, 50.5, "Point", 1170,
-         "43H201 - Liège", "Feature", "6880", 1700611200000, 15.0),
+         "43H201 - Liège", "Feature", "6880", create_cet_timestamp("2023-11-22 00:00:00"), 15.0),
         ('5', 'Particulate Matter < 10 µm', '1170', '43H201 - Liège', '6880', '6880 -  - procedure', '25', 'Particulate Matter < 10 µm',
          '6880', '6880 -  - procedure', '1', 'IRCEL - CELINE: timeseries-api (SOS 2.0)', 5.547464183, 50.624991569, 50.5, "Point", 1170,
-         "43H201 - Liège", "Feature", "6880", 1700611200000, 15.0),
+         "43H201 - Liège", "Feature", "6880", create_cet_timestamp("2023-11-22 00:00:00"), 15.0),
     ], schema=StructType(df_input_fields))
 
     df_expected = spark.createDataFrame([
         ('5', 'Particulate Matter < 10 µm', '1170', '43H201 - Liège', '6880', '6880 -  - procedure', '25', 'Particulate Matter < 10 µm',
          '6880', '6880 -  - procedure', '1', 'IRCEL - CELINE: timeseries-api (SOS 2.0)', 5.547464183, 50.624991569, 50.5, "Point", 1170,
-         "43H201 - Liège", "Feature", "6880", 1700611200000, 15.0, datetime.datetime.strptime("2023-11-22 00:00:00", '%Y-%m-%d %H:%M:%S'),
+         "43H201 - Liège", "Feature", "6880", create_cet_timestamp("2023-11-22 00:00:00"), 15.0, create_utc_datetime("2023-11-22 00:00:00"),
          15.0, "Liège"),
         ('5', 'Particulate Matter < 10 µm', '1170', '43H201 - Liège', '6880', '6880 -  - procedure', '25', 'Particulate Matter < 10 µm',
          '6880', '6880 -  - procedure', '1', 'IRCEL - CELINE: timeseries-api (SOS 2.0)', 5.547464183, 50.624991569, 50.5, "Point", 1170,
-         "43H201 - Liège", "Feature", "6880", 1700611200000, 15.0, datetime.datetime.strptime("2023-11-22 00:00:00", '%Y-%m-%d %H:%M:%S'),
+         "43H201 - Liège", "Feature", "6880", create_cet_timestamp("2023-11-22 00:00:00"), 15.0, create_utc_datetime("2023-11-22 00:00:00"),
          15.0, "Liège"),
         ('5', 'Particulate Matter < 10 µm', '1170', '43H201 - Liège', '6880', '6880 -  - procedure', '25', 'Particulate Matter < 10 µm',
          '6880', '6880 -  - procedure', '1', 'IRCEL - CELINE: timeseries-api (SOS 2.0)', 5.547464183, 50.624991569, 50.5, "Point", 1170,
-         "43H201 - Liège", "Feature", "6880", 1700611200000, 15.0, datetime.datetime.strptime("2023-11-22 00:00:00", '%Y-%m-%d %H:%M:%S'),
+         "43H201 - Liège", "Feature", "6880", create_cet_timestamp("2023-11-22 00:00:00"), 15.0, create_utc_datetime("2023-11-22 00:00:00"),
          15.0, "Liège"),
         ('5', 'Particulate Matter < 10 µm', '1170', '43H201 - Liège', '6880', '6880 -  - procedure', '25', 'Particulate Matter < 10 µm',
          '6880', '6880 -  - procedure', '1', 'IRCEL - CELINE: timeseries-api (SOS 2.0)', 5.547464183, 50.624991569, 50.5, "Point", 1170,
-         "43H201 - Liège", "Feature", "6880", 1700611200000, 15.0, datetime.datetime.strptime("2023-11-22 00:00:00", '%Y-%m-%d %H:%M:%S'),
+         "43H201 - Liège", "Feature", "6880", create_cet_timestamp("2023-11-22 00:00:00"), 15.0, create_utc_datetime("2023-11-22 00:00:00"),
          15.0, "Liège"),
     ], schema=StructType(df_output_fields))
 
@@ -210,3 +209,13 @@ def assert_frames_functionally_equivalent(
     df2.show()
     sorted_rows = df2.select(df1.columns).orderBy(df1.columns).collect()
     assert df1.orderBy(*df1.columns).collect() == sorted_rows, "data not equal"
+
+def create_utc_datetime(dt_str: str):
+    return datetime.datetime.strptime(dt_str, '%Y-%m-%d %H:%M:%S').astimezone(timezone('UTC'))
+
+
+def create_cet_timestamp(dt_str: str):
+    dt = datetime.datetime.strptime(dt_str, '%Y-%m-%d %H:%M:%S')
+    dt = dt.replace(tzinfo=timezone('UTC'))
+    dt = dt.astimezone(timezone('Europe/Brussels'))
+    return int(round(dt.timestamp() * 1000))
