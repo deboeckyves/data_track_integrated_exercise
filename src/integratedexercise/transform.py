@@ -100,7 +100,8 @@ def transform(df):
 def add_city_column(df):
     x = df.first().station_geometry_coordinates_x
     y = df.first().station_geometry_coordinates_y
-    city = get_city(x, y)
+    station_label = df.first().station_label
+    city = get_city(x, y, station_label)
     df = df.withColumn("station_city", F.lit(city))
     return df
 
@@ -124,7 +125,7 @@ def add_datetime_column(df):
 # it is possible to implement this as an udf but this will have a very big impact on performance if not properly cached
 # since the value is the same for each record of the same station, we can just call this function once and add a constant column
 # because there is no built-in pyspark udf caching functionality, i decided to go for the latter
-def get_city(x, y):
+def get_city(x, y, station_label):
     url = f'https://nominatim.openstreetmap.org/reverse?lat={y}&lon={x}&format=json&accept-language=en'
     try:
         result = requests.get(url=url)
@@ -132,12 +133,14 @@ def get_city(x, y):
         address = result_json['address']
         if 'city' in address:
             city = address['city']
-        elif 'city_district' in address:
-            city = address['city_district']
+        elif 'county' in address:
+            city = address['county']
         elif 'town' in address:
             city = address['town']
+        elif 'village' in address:
+            city = address['village']
         else:
-            city = 'unknown'
+            city = station_label.split()[2]
         return city
     except:
         return None

@@ -13,11 +13,12 @@ def get_country(lat, lon):
         result = requests.get(url=url)
         result_json = result.json()
         print(result_json)
-        return result_json['address']['city']
+        return result_json['address']
     except:
         return None
 
-print(get_country(32.782023,35.478867)) # results in Israel
+print(get_country(51.2361942,4.385223684)) # results in Israel
+print('41B011 - Berchem-Sainte-Agathe'.split()[2].strip())
 # os.environ['TZ'] = 'Europe/London'
 # time.tzset()
 # print(time.strftime('%X %x %Z'))
