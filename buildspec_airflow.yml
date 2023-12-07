@@ -1,0 +1,12 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      python: 3.11
+    commands:
+  build:
+    commands:
+      - aws s3 cp dags/integrated_exercise-tf.py s3://data-track-integrated-exercise/dags/yves_integrated_exercise_tf.py
+
+

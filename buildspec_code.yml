@@ -1,0 +1,22 @@
+version: 0.2
+
+phases:
+  pre-build:
+    commands:
+      - aws ecr get-login-password --region eu-west-1 | docker login --username AWS --password-stdin 167698347898.dkr.ecr.eu-west-1.amazonaws.com
+  build:
+    commands:
+      - cd docker/ingest
+      - docker build -t yves-integrated-exercise-ingest-tf .
+      - docker tag yves-integrated-exercise-ingest-tf:latest 167698347898.dkr.ecr.eu-west-1.amazonaws.com/yves-integrated-exercise-ingest-tf:latest
+      - docker push 167698347898.dkr.ecr.eu-west-1.amazonaws.com/yves-integrated-exercise-ingest-tf:latest
+
+      - cd docker/transform
+      - docker build -t yves-integrated-exercise-transform-tf .
+      - docker tag yves-integrated-exercise-transform-tf:latest 167698347898.dkr.ecr.eu-west-1.amazonaws.com/yves-integrated-exercise-transform-tf:latest
+      - docker push 167698347898.dkr.ecr.eu-west-1.amazonaws.com/yves-integrated-exercise-transform-tf:latest
+
+      - cd docker/load
+      - docker build -t yves-integrated-exercise-load-tf .
+      - docker tag yves-integrated-exercise-load-tf:latest 167698347898.dkr.ecr.eu-west-1.amazonaws.com/yves-integrated-exercise-load-tf:latest
+      - docker push 167698347898.dkr.ecr.eu-west-1.amazonaws.com/yves-integrated-exercise-load-tf:latest
