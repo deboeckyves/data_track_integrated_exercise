@@ -58,7 +58,7 @@ resource "aws_batch_job_definition" "load-job-definition" {
   }
   container_properties = jsonencode({
     command = ["python3","./load.py","-d","2023-11-23","-e","dev"],
-    image   = "167698347898.dkr.ecr.eu-west-1.amazonaws.com/yves-integrated-exercise-load-tf:v3"
+    image   = "167698347898.dkr.ecr.eu-west-1.amazonaws.com/yves-integrated-exercise-load-tf:v4"
     jobRoleArn = "arn:aws:iam::167698347898:role/integrated-exercise/integrated-exercise-batch-job-role"
     executionRoleArn = "arn:aws:iam::167698347898:role/integrated-exercise/integrated-exercise-batch-job-role"
     resourceRequirements = [
