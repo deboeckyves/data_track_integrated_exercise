@@ -133,12 +133,12 @@ def get_city(x, y, station_label):
         address = result_json['address']
         if 'city' in address:
             city = address['city']
-        elif 'county' in address:
-            city = address['county']
         elif 'town' in address:
             city = address['town']
         elif 'village' in address:
             city = address['village']
+        elif 'county' in address:
+            city = address['county']
         else:
             city = station_label.split()[2]
         return city
