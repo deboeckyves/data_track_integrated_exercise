@@ -17,7 +17,7 @@ def get_country(lat, lon):
     except:
         return None
 
-print(get_country(51.2361942,4.385223684)) # results in Israel
+print(get_country(50.917228441, 3.3073857999)) # results in Israel
 print('41B011 - Berchem-Sainte-Agathe'.split()[2].strip())
 # os.environ['TZ'] = 'Europe/London'
 # time.tzset()

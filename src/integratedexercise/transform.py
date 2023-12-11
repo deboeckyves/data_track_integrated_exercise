@@ -117,7 +117,7 @@ def add_avg_column(df):
 def add_datetime_column(df):
     df = df.withColumn("datetime",
                        F.to_utc_timestamp(F.from_unixtime(F.col("timestamp") / 1000, 'yyyy-MM-dd HH:mm:ss'),
-                                          'CET'))
+                                          'UTC'))
     return df
 
 

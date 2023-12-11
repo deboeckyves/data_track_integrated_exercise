@@ -14,22 +14,6 @@
     "type": "Feature",
     "timeseries": {
         "6152": {
-            "service": {
-                "id": "1",
-                "label": "IRCEL - CELINE: timeseries-api (SOS 2.0)"
-            },
-            "offering": {
-                "id": "6152",
-                "label": "6152 - DAILY CORRECTION TEOM - procedure"
-            },
-            "feature": {
-                "id": "1030",
-                "label": "40AL01 - Linkeroever"
-            },
-            "procedure": {
-                "id": "6152",
-                "label": "6152 - DAILY CORRECTION TEOM - procedure"
-            },
             "phenomenon": {
                 "id": "5",
                 "label": "Particulate Matter < 10 \u00b5m"
