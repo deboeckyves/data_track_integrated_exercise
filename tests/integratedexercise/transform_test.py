@@ -9,7 +9,7 @@ from src.integratedexercise.transform import add_city_column, add_datetime_colum
 from pyspark.sql import DataFrame
 from pyspark.sql.types import StructField, StringType, IntegerType, StructType, LongType, DoubleType, TimestampType
 
-os.environ['TZ'] = 'Europe/Brussels'
+os.environ['TZ'] = 'UTC'
 time.tzset()
 
 def test_transform_add_avg_column(spark):
