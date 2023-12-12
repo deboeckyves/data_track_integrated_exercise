@@ -7,6 +7,7 @@ import requests
 import time
 from pyspark.sql import SparkSession
 
+
 S3_PATH_PREFIX = 's3a'
 
 S3_SOURCE_FOLDER_NAME = 'yves-data-v2'
@@ -58,11 +59,6 @@ def main():
     files_in_s3 = [f.key.split(folder + "/")[1] for f in s3_bucket.objects.filter(Prefix=folder).all()]
     counter = 0
 
-    files_in_s3.remove('1030.json')
-    data_station_df = read_json_from_s3(args, '1030.json')
-    df_ppm_all_stations = transform(data_station_df)
-
-
     for file in files_in_s3:
         data_station_df = read_json_from_s3(args, file)
 
@@ -71,13 +67,10 @@ def main():
 
         try:
             df = transform(data_station_df)
-            df_ppm_all_stations = df_ppm_all_stations.union(df)
+            write_parquet_to_s3(df, args.date, file)
         except Exception as err:
             logging.error(f"Exception for file {file}: {err}")
             counter += 1
-
-    df_ppm_all_stations.write.mode("overwrite").partitionBy("phenomenon_id").parquet(
-        f"{S3_PATH_PREFIX}://{S3_BUCKET_NAME}/{f'{S3_SOURCE_FOLDER_NAME}/clean/aggregate_station_by_day_v2'}/{args.date}/all_stations")
 
     logging.info(f"data transformed for date {args.date}, encountered {counter} errors")
 
@@ -100,7 +93,7 @@ def transform(df):
     # we would the timezone information as a parameter. One solution would be to enforce a "timezone" column in the schema saved to s3.
     df = add_datetime_column(df).cache()
     df = add_avg_column(df)
-    # df = add_city_column(df)
+    df = add_city_column(df)
     return df
 
 
