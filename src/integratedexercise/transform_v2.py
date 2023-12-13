@@ -100,7 +100,7 @@ def transform(df):
     # we would the timezone information as a parameter. One solution would be to enforce a "timezone" column in the schema saved to s3.
     df = add_datetime_column(df).cache()
     df = add_avg_column(df)
-    # df = add_city_column(df)
+    df = add_city_column(df)
     return df
 
 
