@@ -90,8 +90,8 @@ def main():
     files_in_s3 = [f.key.split(folder + "/")[1].split('/')[0] for f in s3_bucket.objects.filter(Prefix=folder).all()]
     files.update(files_in_s3)
 
-    load_for_phenomenon(args, files, 5, "PPM")
-    load_for_phenomenon(args, files, 8, "OZON")
+    load_for_phenomenon(args, files, "5", "PPM")
+    load_for_phenomenon(args, files, "6001", "OZON")
 
 
 def load_for_phenomenon(args, files, phenomenon_id, phenomenon_label):
@@ -111,7 +111,7 @@ def load_for_phenomenon(args, files, phenomenon_id, phenomenon_label):
 
 
 def writeSnowflakeTable(df, sfOptions, table_name, mode):
-    spark.sparkContext._jvm.net.snowflake.spark.snowflake.Utils.runQuery(sfOptions, getCreateTableString())
+    spark.sparkContext._jvm.net.snowflake.spark.snowflake.Utils.runQuery(sfOptions, getCreateTableString(table_name))
     df.write.format("snowflake").options(**sfOptions).option("dbtable", f"{table_name}").mode(mode).save()
 
 
