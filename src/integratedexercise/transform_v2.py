@@ -58,6 +58,7 @@ def main():
     files_in_s3 = [f.key.split(folder + "/")[1] for f in s3_bucket.objects.filter(Prefix=folder).all()]
     counter = 0
 
+    ##
     files_in_s3.remove('1030.json')
     data_station_df = read_json_from_s3(args, '1030.json')
     df_ppm_all_stations = transform(data_station_df)
