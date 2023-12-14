@@ -117,7 +117,7 @@ def writeSnowflakeTable(df, sfOptions, table_name, mode):
 
 
 def getCreateTableString(table_name):
-    f"""CREATE TABLE IF NOT EXISTS {table_name} (
+    return f"""CREATE TABLE IF NOT EXISTS {table_name} (
         category_id VARCHAR,
         category_label VARCHAR,
         feature_id VARCHAR,
